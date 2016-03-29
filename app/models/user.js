@@ -10,16 +10,15 @@ var User = db.Model.extend({
   },
 
   hashPassword: function(model, attrs, options) {
-    return new Promise(function(resolve, reject) {
-      bcrypt.hash(model.attributes.password, 10, function(err, hash) {  
-        if (err) {
-          reject(err);
-        }
-        model.set('password', hash);
-        resolve(hash);
-      });
-    });
+    // var realPassword = model.attributes.password;
+    var hash = bcrypt.hashSync(model.attributes.password);
+    model.attributes.password = hash;
+  },
+
+  comparePassword: function(model, attrs, options) {
+    var check = bcrypt.compareSync(model.attributes.password);
   }
+
 });
 
 module.exports = User;

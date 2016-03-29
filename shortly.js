@@ -2,6 +2,8 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var bcrypt = require('bcrypt-nodejs');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -22,6 +24,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'winniethepooh',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false
+  }
+}));
 
 app.get('/', 
 function(req, res) {
@@ -47,7 +57,27 @@ function(req, res) {
 
 app.post('/login',
 function(req, res) {
+  new User({
+    username: req.body.username
+  })
+  .fetch()
+  .then(function(user) {
+    console.log('LOGIN: ', user);
 
+    //compare hash
+    var check = bcrypt.compareSync(req.body.password, user.attributes.password);
+
+    //check credentials for session
+    if (check) {
+      req.session.user = user.attributes.username;
+      req.session.save();
+      //redirect to homepage once authenticated
+      req.redirect('/');
+    } else {
+      //send user to login page if unauthenticated
+      res.send('/login');
+    }
+  });
   res.render('index');
 });
 
@@ -63,9 +93,11 @@ function(req, res) {
     password: req.body.password
   })
   .save()
-  .then(function(found) {
-    console.log(found);
+  .then(function(user) {
     res.render('index');
+  })
+  .catch(function(err) {
+    throw err;
   });
 });
 
