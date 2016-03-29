@@ -72,7 +72,9 @@ function(req, res) {
   })
   .fetch()
   .then(function(user) {
-    // console.log('LOGIN: ', user);
+    if (!user) {
+      res.render('login', {err: true});
+    }
 
     //compare hash
     var check = bcrypt.compareSync(req.body.password, user.attributes.password);
