@@ -47,6 +47,7 @@ function(req, res) {
 
 app.post('/login',
 function(req, res) {
+
   res.render('index');
 });
 
@@ -57,6 +58,7 @@ function(req, res) {
 
 app.post('/signup',
 function(req, res) {
+  User.addUser(req, res);
   res.render('index');
 });
 
