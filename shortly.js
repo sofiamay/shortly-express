@@ -35,7 +35,11 @@ app.use(session({
 
 app.get('/', 
 function(req, res) {
-  res.render('index', {user: req.session.user});
+  if (req.session.user) {
+    res.render('index', {user: req.session.user});
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/create', 
@@ -56,7 +60,7 @@ function(req, res) {
       res.send(200, links.models);
     });
   } else {
-    res.redirect('/signup');
+    res.redirect('/login');
   }
 });
 
@@ -73,7 +77,8 @@ function(req, res) {
   .fetch()
   .then(function(user) {
     if (!user) {
-      res.render('login', {err: true});
+      res.redirect('/login');
+      // res.render('login', {err: true});
     }
 
     //compare hash
@@ -118,7 +123,9 @@ function(req, res) {
   })
   .save()
   .then(function(user) {
-    res.redirect('/login');
+    req.session.user = user.attributes.username;
+    req.session.save();
+    res.redirect('/');
   })
   .catch(function(err) {
     throw err;
