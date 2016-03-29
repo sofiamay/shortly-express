@@ -35,19 +35,29 @@ app.use(session({
 
 app.get('/', 
 function(req, res) {
-  res.render('index');
+  res.render('index', {user: req.session.user});
 });
 
 app.get('/create', 
 function(req, res) {
-  res.render('index');
+  //checkUser functionality
+  if (req.session.user) {
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/links', 
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  });
+  //only allow registered members
+  if (req.session.user) {
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    });
+  } else {
+    res.redirect('/signup');
+  }
 });
 
 app.get('/login',
@@ -69,10 +79,8 @@ function(req, res) {
 
     //check credentials for session
     if (check) {
-      console.log('req.session: (BEFORE)', req.session);
       req.session.user = user.attributes.username;
       req.session.save();
-      console.log('req.session: (AFTER)', req.session);
       //redirect to homepage once authenticated
       res.redirect('/');
     } else {
@@ -80,8 +88,20 @@ function(req, res) {
       res.redirect('/login');
     }
   });
-  // res.render('index');
 });
+
+app.get('/logout', 
+  function(req, res) {
+    //stop session for user
+    req.session.destroy(function(err) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.redirect('/');
+      }
+    });
+  }
+);
 
 app.get('/signup',
 function(req, res) {
@@ -96,7 +116,7 @@ function(req, res) {
   })
   .save()
   .then(function(user) {
-    res.render('index');
+    res.redirect('/login');
   })
   .catch(function(err) {
     throw err;
