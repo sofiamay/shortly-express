@@ -62,23 +62,25 @@ function(req, res) {
   })
   .fetch()
   .then(function(user) {
-    console.log('LOGIN: ', user);
+    // console.log('LOGIN: ', user);
 
     //compare hash
     var check = bcrypt.compareSync(req.body.password, user.attributes.password);
 
     //check credentials for session
     if (check) {
+      console.log('req.session: (BEFORE)', req.session);
       req.session.user = user.attributes.username;
       req.session.save();
+      console.log('req.session: (AFTER)', req.session);
       //redirect to homepage once authenticated
-      req.redirect('/');
+      res.redirect('/');
     } else {
       //send user to login page if unauthenticated
-      res.send('/login');
+      res.redirect('/login');
     }
   });
-  res.render('index');
+  // res.render('index');
 });
 
 app.get('/signup',
