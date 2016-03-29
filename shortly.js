@@ -58,8 +58,15 @@ function(req, res) {
 
 app.post('/signup',
 function(req, res) {
-  User.addUser(req, res);
-  res.render('index');
+  new User({
+    username: req.body.username, 
+    password: req.body.password
+  })
+  .save()
+  .then(function(found) {
+    console.log(found);
+    res.render('index');
+  });
 });
 
 app.post('/links', 
