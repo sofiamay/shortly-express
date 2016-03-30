@@ -4,6 +4,7 @@ var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
 var session = require('express-session');
+var flash = require('connect-flash');
 
 
 var db = require('./app/config');

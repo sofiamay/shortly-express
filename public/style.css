@@ -17,8 +17,8 @@ h1 {
   font-size: 42px;
   font-weight: 700;
   margin-bottom: 10px;
-  margin-left: 20px;
-  color: #0DF9FC;
+  margin-left: 12px;
+  color: #460CED;
 }
 
 .navigation {
@@ -51,7 +51,9 @@ h1 {
 }
 
 .navigation li a:hover {
-  background-color: #ddd;
+  background-color: #460CED;
+  color: #FFF;
+  font-weight: 500;
 }
 
 .navigation li a.selected {
@@ -71,7 +73,8 @@ h1 {
 }
 
 .link:hover {
-  background-color: #efe;
+  background-color: #885AED;
+  color: #FFF;
 }
 
 .link img {
